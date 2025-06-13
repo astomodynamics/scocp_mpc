@@ -42,6 +42,18 @@ def generate_launch_description():
         description='Whether to launch RViz'
     )
     
+    use_mpc_arg = DeclareLaunchArgument(
+        'use_mpc',
+        default_value='true',
+        description='Whether to launch MPC controller'
+    )
+    
+    mpc_horizon_arg = DeclareLaunchArgument(
+        'mpc_horizon',
+        default_value='20',
+        description='MPC prediction horizon'
+    )
+    
     # Get package directory
     pkg_share = FindPackageShare('scocp_mpc')
     
@@ -74,17 +86,31 @@ def generate_launch_description():
         output='screen'
     )
     
-    # Teleop keyboard node
-    teleop_keyboard_node = Node(
+    # MPC node
+    mpc_node = Node(
         package='scocp_mpc',
-        executable='teleop_keyboard',
-        name='teleop_keyboard',
+        executable='mpc_node',
+        name='mpc_node',
         parameters=[{
-            'robot_id': LaunchConfiguration('robot_id')
+            'robot_id': LaunchConfiguration('robot_id'),
+            'horizon': LaunchConfiguration('mpc_horizon')
         }],
-        output='screen',
-        prefix='gnome-terminal -- '  # Launch in separate terminal for keyboard input
+        condition=IfCondition(LaunchConfiguration('use_mpc')),
+        output='screen'
     )
+    
+     
+    # # Teleop keyboard node
+    # teleop_keyboard_node = Node(
+    #     package='scocp_mpc',
+    #     executable='teleop_keyboard',
+    #     name='teleop_keyboard',
+    #     parameters=[{
+    #         'robot_id': LaunchConfiguration('robot_id')
+    #     }],
+    #     output='screen',
+    #     prefix='gnome-terminal -- '  # Launch in separate terminal for keyboard input
+    # )
     
     # RViz node
     rviz_node = Node(
@@ -102,8 +128,11 @@ def generate_launch_description():
         init_y_arg,
         init_yaw_arg,
         use_rviz_arg,
+        use_mpc_arg,
+        mpc_horizon_arg,
         unicycle_robot_node,
         hardcoded_map_node,
-        teleop_keyboard_node,
+        mpc_node,
+        # teleop_keyboard_node,
         rviz_node
     ]) 

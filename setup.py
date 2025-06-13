@@ -25,6 +25,7 @@ setup(
             'teleop_keyboard = scocp_mpc.teleop_keyboard:main',
             'unicycle_robot_node = scocp_mpc.unicycle_robot_node:main',
             'hardcoded_map_node = scocp_mpc.hardcoded_map_node:main',
+            'mpc_node = scocp_mpc.mpc_node:main',
         ],
     },
 )
